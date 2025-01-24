@@ -1,0 +1,34 @@
+.task {
+    height:30%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    background-color:#D8D8D8;
+}
+
+#whiteboard {
+    width: 90vw; /* 80% of the viewport width */
+    margin: auto; /* Center it horizontally */
+    min-height: 75vh;
+}
+
+/* Equal width for col1, col2, col3 */
+#col1, #col2, #col3 {
+    flex: 1 1 0; /* Ensure equal width */
+}
+
+#task {
+    width: 100%; /* Full width of parent */
+}
+
+body {
+    display: flex; /* Enable flexbox on the body */
+    justify-content: center; /* Center horizontally */
+}
+
+.description{
+    background-color:#F8F8F8;
+    padding:5px
+}
+
+.info{
+    color:white;
+}
