@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
+{% from 'bootstrap4/form.html' import render_form %}
+{% include "header.html" %}
+<body class="flex-column">
+<div class="container d-flex flex-column">
+    <h3 class="mx-auto">Edit your task</h3>
+    {{render_form(form)}}
+</div>
 </body>
+{% include "footer.html" %}
 </html>

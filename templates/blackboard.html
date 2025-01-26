@@ -1,108 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Todo list</title>
-    <link rel="stylesheet" href="/static/myStyle.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-</head>
-<body>
+
+{% include "header.html" %}
+{% macro display(col, board) %}
+    {% for task in board[col] %}
+        <!-- Start of Task card -->
+        <div class="task d-flex flex-column border rounded-3 p-2">
+            <div class="d-flex">
+                <h4 class="ps-3 flex-grow-1">{{task.title}}</h4>
+                <a class="mx-2" href="{{url_for('edit', task_id=task.id)}}">edit</a>
+                <a class="" href="{{url_for('delete', task_id=task.id)}}">delete</a>
+            </div>
+            <div class="d-flex flex-row justify-content-evenly">
+                <p class="info py-1 px-2 rounded-3 bg-primary">
+                    {% if task.category == None %}
+                        Uncategorized
+                    {% else %}
+                        {{task.category}}
+                    {% endif %}
+                </p>
+                    {% if task.date != None %}
+                        {% if task.date < today %}
+                            <p class="info py-1 px-2 rounded-3 bg-danger">
+                                {{task.date}}
+                         {% elif task.date == today %}
+                            <p class="info py-1 px-2 rounded-3 bg-warning">
+                            {{task.date}}
+                        {% else %}
+                            <p class="info py-1 px-2 rounded-3 bg-secondary">
+                                {{task.date}}
+                        {% endif %}
+                    </p>
+                    {% endif %}
+                    {% if task.done == False %}
+                        <form action="{{url_for('done', task_id=task.id)}}" method="GET">
+                            <button type="submit" class="btn btn-secondary rounded-3" style="height:35px;">To do</button>
+                        </form>
+
+                    {% else %}
+                        <form action="{{url_for('done', task_id=task.id)}}" method="GET">
+                            <button type="submit" class="btn btn-success rounded-3" style="height:35px;">Done</button>
+                        </form>
+                    {% endif %}
+            </div>
+            <p class="description rounded-3 flex-grow-1 flex-shrink-1 lead">{{task.description}}</p>
+        </div>
+        <!-- End of Task card -->
+    {% endfor %}
+{% endmacro %}
+<body class="flex-column">
 <!-- Fullscreen container -->
-            <div id="whiteboard" class="d-flex flex-row justify-content-evenly bd-highlight p-3 m-5 rounded-3 border shadow-lg">
-                <div id="col1" class="d-flex flex-column border m-2" >
-                    {% for task in tasks[0] %}
-                        <!-- Start of Task card -->
-                        <div class="task d-flex flex-column border rounded-3 m-1 p-2">
-                            <h4 class="ps-3">{{task.title}}</h4>
-                            <div class="d-flex flex-row justify-content-evenly">
-                                <p class="info py-1 px-2 rounded-3 bg-primary">
-                                    {% if task.category == null %}
-                                        Uncategorized
-                                    {% else %}
-                                        {{task.category}}
-                                    {% endif %}
-                                </p>
-                                <p class="info py-1 px-2 rounded-3 bg-secondary">
-                                    {% if task.category != null %}
-                                        {{task.category}}
-                                    {% endif %}
-                                </p>
-                                <p class="info py-1 px-2 rounded-3 bg-secondary">
-                                    {% if task.done == False %}
-                                        to do
-                                    {% else %}
-                                        done
-                                    {% endif %}
-                                </p>
-                            </div>
-                            <p class="description rounded-3 flex-grow-1 flex-shrink-1 lead">{{task.description}}</p>
-                        </div>
-                        <!-- End of Task card -->
-                        {% endfor %}
+            <div class="whiteboard d-flex flex-row justify-content-evenly bd-highlight p-3 m-5 rounded-3 border shadow-lg">
+                <div class="col d-flex flex-column m-2" >
+                        {{ display(0, todo_tasks) }}
                     </div>
-                    <div id="col2" class="d-flex flex-column border m-2">
-                        {% for task in tasks[1] %}
-                            <!-- Start of Task card -->
-                            <div class="task d-flex flex-column border rounded-3 m-1 p-2">
-                                <h4 class="ps-3">{{task.title}}</h4>
-                                <div class="d-flex flex-row justify-content-evenly">
-                                    <p class="info py-1 px-2 rounded-3 bg-primary">
-                                        {% if task.category == null %}
-                                            Uncategorized
-                                        {% else %}
-                                            {{task.category}}
-                                        {% endif %}
-                                    </p>
-                                    <p class="info py-1 px-2 rounded-3 bg-secondary">
-                                        {% if task.category != null %}
-                                            {{task.category}}
-                                        {% endif %}
-                                    </p>
-                                    <p class="info py-1 px-2 rounded-3 bg-secondary">
-                                        {% if task.done == False %}
-                                            to do
-                                        {% else %}
-                                            done
-                                        {% endif %}
-                                    </p>
-                                </div>
-                                <p class="description rounded-3 flex-grow-1 flex-shrink-1 lead">{{task.description}}</p>
-                            </div>
-                            <!-- End of Task card -->
-                        {% endfor %}
+                    <div class="col d-flex flex-column m-2">
+                        {{ display(1, todo_tasks) }}
                     </div>
-                    <div id="col3" class="d-flex flex-column border m-2">
-                        {% for task in tasks[2] %}
-                            <!-- Start of Task card -->
-                            <div class="task d-flex flex-column border rounded-3 m-1 p-2">
-                                <h4 class="ps-3">{{task.title}}</h4>
-                                <div class="d-flex flex-row justify-content-evenly">
-                                    <p class="info py-1 px-2 rounded-3 bg-primary">
-                                        {% if task.category == null %}
-                                            Uncategorized
-                                        {% else %}
-                                            {{task.category}}
-                                        {% endif %}
-                                    </p>
-                                    <p class="info py-1 px-2 rounded-3 bg-secondary">
-                                        {% if task.category != null %}
-                                            {{task.category}}
-                                        {% endif %}
-                                    </p>
-                                    <p class="info py-1 px-2 rounded-3 bg-secondary">
-                                        {% if task.done == False %}
-                                            to do
-                                        {% else %}
-                                            done
-                                        {% endif %}
-                                    </p>
-                                </div>
-                                <p class="description rounded-3 flex-grow-1 flex-shrink-1 lead">{{task.description}}</p>
-                            </div>
-                            <!-- End of Task card -->
-                        {% endfor %}
+                    <div class="col d-flex flex-column m-2">
+                        {{ display(2, todo_tasks) }}
+                    </div>
+                </div>
+            <div class="d-flex flex-row justify-content-evenly bd-highlight p-3 m-5 rounded-3 border shadow-lg">
+                <div class="col d-flex flex-column m-2" >
+                        {{ display(0, done_tasks) }}
+                    </div>
+                    <div class="col d-flex flex-column m-2">
+                        {{ display(1, done_tasks) }}
+                    </div>
+                    <div class="col d-flex flex-column m-2">
+                        {{ display(2, done_tasks) }}
                     </div>
             </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+            </div>
+{% include "footer.html" %}
 </body>
 </html>
