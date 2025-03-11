@@ -131,7 +131,12 @@ def edit(task_id):
 def new():
     form = MyForm()
     if form.validate_on_submit():
-        new_task = Task(title=form.Title.data, category=form.Category.data, date=form.Date.data,
+        cat_value = None
+        if form.Category.data:
+            # TODO translate value from category into category_ID
+            cat_value = form.Category.data
+        print(f"{form.Title.data}, cat{form.Category.data}, date:{form.Date.data}, {form.Description.data}")
+        new_task = Task(title=form.Title.data, category=cat_value, date=form.Date.data,
                         description=form.Description.data)
         db.session.add(new_task)
         db.session.commit()
