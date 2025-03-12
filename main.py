@@ -44,12 +44,15 @@ class Task(db.Model):
 
     # Relationship to Category
     category: Mapped["Category"] = relationship("Category", back_populates="tasks")
+
+
 class MyForm(FlaskForm):
     Title = StringField('Title', validators=[DataRequired()])
     Category = SelectField('Category', choices=[], validators=[Optional()])
     Date = DateField('Date', validators=[Optional()])
     Description = StringField('Description ')
     Submit = SubmitField('Submit')
+
 
 class Catform(FlaskForm):
     CatName = StringField('Category', validators=[DataRequired()])
@@ -58,6 +61,7 @@ class Catform(FlaskForm):
 
 with app.app_context():
     db.create_all()
+
 
 @app.route("/")
 def home():
@@ -84,7 +88,6 @@ def home():
                 done_col = 0
                 done_row += 1
     today = datetime.date(datetime.today())
-    print(today)
     return render_template("blackboard.html", todo_tasks=todo_board, done_tasks=done_board, today=today)
 
 
@@ -130,18 +133,19 @@ def edit(task_id):
 @app.route('/new', methods=["GET", "POST"])
 def new():
     form = MyForm()
+    form.Category.choices = [("", "Uncategorized")] + [(int(c.id), c.name) for c in
+                                                       db.session.execute(db.select(Category)).scalars().all()]
     if form.validate_on_submit():
         cat_value = None
-        if form.Category.data:
-            # TODO translate value from category into category_ID
+        if form.Category.data:  # Check if a value is return for Category, otherwise put None
             cat_value = form.Category.data
-        print(f"{form.Title.data}, cat{form.Category.data}, date:{form.Date.data}, {form.Description.data}")
+            cat_value = db.session.execute(db.select(Category).where(Category.id == cat_value)).scalar()  # Translate category_id into category_name
+        print(f"{form.Title.data}, cat:{form.Category.data}, date:{form.Date.data}, {form.Description.data}")
         new_task = Task(title=form.Title.data, category=cat_value, date=form.Date.data,
                         description=form.Description.data)
         db.session.add(new_task)
         db.session.commit()
         return redirect('/')
-    form.Category.choices = [("", "Uncategorized")] + [(str(c.id), c.name) for c in db.session.execute(db.select(Category)).scalars().all()]
     return render_template('new.html', form=form)
 
 
@@ -167,12 +171,14 @@ def categories():
 
     return render_template('categories.html', categories=categories, form=form)
 
+
 @app.route('/del_cat/<cat_id>')
 def del_cat(cat_id):
     to_delete = db.session.execute(db.select(Category).where(Category.id == cat_id)).scalar()
     db.session.delete(to_delete)
     db.session.commit()
     return redirect('/categories')
+
 
 @app.route('/up_cat/<cat_id>', methods=["GET", "POST"])
 def up_cat(cat_id):
